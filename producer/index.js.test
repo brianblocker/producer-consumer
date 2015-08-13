@@ -124,36 +124,6 @@ describe('Producer', function () {
     });
   });
 
-  describe('.ensureProperOperator', function () {
-    it('returns a + by default', function () {
-      var operator = Producer.ensureProperOperator();
-
-      expect(operator).to.equal('+');
-    });
-
-    it('can have a different default set', function () {
-      var operator = Producer.ensureProperOperator('', '*');
-
-      expect(operator).to.equal('*');
-    });
-
-    it('returns valid operators', function () {
-      var operator_minus    = Producer.ensureProperOperator('-');
-      var operator_plus     = Producer.ensureProperOperator('+');
-      var operator_multiply = Producer.ensureProperOperator('*');
-
-      expect(operator_minus).to.equal('-');
-      expect(operator_plus).to.equal('+');
-      expect(operator_multiply).to.equal('*');
-    });
-
-    it('returns the default operator when an invalid value is passed in', function () {
-      var bad_operator = Producer.ensureProperOperator('%');
-
-      expect(bad_operator).to.equal('+');
-    });
-  });
-
   describe('#generateEquation', function () {
     it('calls #generateInteger', function () {
       var spy      = sinon.spy(Producer.prototype, 'generateInteger');
@@ -225,6 +195,36 @@ describe('Producer', function () {
       expect(producer.timer).to.exist;
 
       producer.stop();
+    });
+  });
+
+  describe('.ensureProperOperator', function () {
+    it('returns a + by default', function () {
+      var operator = Producer.ensureProperOperator();
+
+      expect(operator).to.equal('+');
+    });
+
+    it('can have a different default set', function () {
+      var operator = Producer.ensureProperOperator('', '*');
+
+      expect(operator).to.equal('*');
+    });
+
+    it('returns valid operators', function () {
+      var operator_minus    = Producer.ensureProperOperator('-');
+      var operator_plus     = Producer.ensureProperOperator('+');
+      var operator_multiply = Producer.ensureProperOperator('*');
+
+      expect(operator_minus).to.equal('-');
+      expect(operator_plus).to.equal('+');
+      expect(operator_multiply).to.equal('*');
+    });
+
+    it('returns the default operator when an invalid value is passed in', function () {
+      var bad_operator = Producer.ensureProperOperator('%');
+
+      expect(bad_operator).to.equal('+');
     });
   });
 });
