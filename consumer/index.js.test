@@ -1,0 +1,7 @@
+var expect = require('chai').expect;
+
+describe('General', function () {
+  it('is good', function () {
+    expect(true).to.be.true;
+  });
+});

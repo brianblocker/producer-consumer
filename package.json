@@ -1,0 +1,32 @@
+{
+  "name": "producer-consumer",
+  "version": "0.0.1",
+  "description": "Fancy producer/consumer demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianblocker/producer-consumer.git"
+  },
+  "author": "@brianblocker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brianblocker/producer-consumer/issues"
+  },
+  "homepage": "https://github.com/brianblocker/producer-consumer",
+  "dependencies": {
+    "connect": "^3.4.0",
+    "gulp": "^3.9.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "glob": "^5.0.14",
+    "gulp-mocha": "^2.1.3",
+    "mocha": "^2.2.5",
+    "require-dir": "^0.3.0",
+    "sinon": "^1.15.4",
+    "sinon-chai": "^2.8.0"
+  }
+}
