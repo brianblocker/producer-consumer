@@ -1,7 +1,90 @@
-var expect = require('chai').expect;
+var expect   = require('chai').expect;
+var sinon    = require('sinon');
+var Consumer = require('./index');
 
-describe('General', function () {
-  it('is good', function () {
-    expect(true).to.be.true;
+function clearCache () {
+  Consumer.cache = {};
+}
+
+describe('Consumer', function () {
+  afterEach(function () {
+    clearCache();
+  });
+
+  describe('#insertIntoCache', function () {
+    it('inserts result into cache, keyed by the expression', function () {
+      var expression = "2+3=";
+      var result     = 5;
+
+      Consumer.prototype.insertIntoCache(expression, result);
+
+      expect(Consumer.cache[expression]).to.equal(result);
+    });
+  });
+
+  describe('#getFromCache', function () {
+    it('returns the result when present', function () {
+      var expression = "2+2=";
+      var result     = 4;
+      var cached;
+
+      Consumer.prototype.insertIntoCache(expression, result);
+
+      cached = Consumer.prototype.getFromCache(expression);
+
+      expect(cached).to.equal(result);
+    });
+
+    it('returns undefined when result is not present', function () {
+      var cached = Consumer.prototype.getFromCache('1+1=');
+
+      expect(cached).not.to.exist;
+    });
+  });
+
+  describe('#validateExpression', function () {
+    it('validates 2 operand expressions', function () {
+      var expressions = [
+        '2+2=', '2+7=', '0+8=', '15153+23=', '234235+254634=',
+        '2*2=', '2*7=', '0*8=', '15153*23=', '234235*254634=',
+        '2-2=', '2-7=', '0-8=', '15153-23=', '234235-254634=',
+      ];
+
+      expressions.forEach(function (expression) {
+        expect(Consumer.prototype.validateExpression(expression)).to.be.true;
+      });
+    });
+
+    it('validates 3 operand expressions', function () {
+      var expressions = [
+        '2+2+5=', '2+7+5=', '0+8+5=', '15153+23+5=', '234235+254634+5=',
+        '2*2*5=', '2*7*5=', '0*8*5=', '15153*23*5=', '234235*254634*5=',
+        '2-2-5=', '2-7-5=', '0-8-5=', '15153-23-5=', '234235-254634-5=',
+      ];
+
+      expressions.forEach(function (expression) {
+        expect(Consumer.prototype.validateExpression(expression)).to.be.true;
+      });
+    });
+
+    it('validates 5+ operand expressions', function () {
+      var expressions = [
+        '2+3+5+4+6=', '2+3+5+4+6+22+1616+7+2+1634257+23+7='
+      ];
+
+      expressions.forEach(function (expression) {
+        expect(Consumer.prototype.validateExpression(expression)).to.be.true;
+      });
+    });
+
+    it('rejects bad expressions', function () {
+      var bad_expressions = [
+        '-2+5=', 'alphapig', '', 7, '8++7=', undefined
+      ];
+
+      bad_expressions.forEach(function (expression) {
+        expect(Consumer.prototype.validateExpression(expression)).to.be.false;
+      });
+    });
   });
 });

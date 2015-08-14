@@ -20,7 +20,6 @@ Producer.prototype.setOptions = function setOptions (options) {
   options.timeout  = Number(options.timeout) || 1000;
   options.total    = Number(options.total)   || 2;
   options.operator = options.operator        || '+';
-
   options.operator = Producer.ensureProperOperator(options.operator);
 
   this.options = options;
