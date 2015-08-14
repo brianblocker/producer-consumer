@@ -32,9 +32,9 @@ Consumer.prototype.writeLogsToFile = function writeLogsToFile () {
   var new_message = '';
   var tmp;
 
-  while (tmp = Consumer.logs.shift()) {
-    new_message += tmp + '\n';
-  }
+  new_message = Consumer.logs.join('\n');
+
+  Consumer.logs = [];
 
   if (! this.options.writeLogs) {
     console.log(new_message);
