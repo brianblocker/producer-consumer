@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 
 function Consumer (options) {
@@ -16,6 +18,16 @@ Consumer.prototype.insertIntoCache = function insertIntoCache (expression, resul
 
 Consumer.prototype.getFromCache = function getFromCache (expression) {
   return Consumer.cache[expression];
+};
+
+Consumer.prototype.evaluateExpression = function evaluateExpression (expression) {
+  expression = expression.replace(/=$/, '');
+
+  /**
+   * We are in strict mode, so we need to append the var created in the
+   * eval statement so that we can get the result back
+   */
+  return eval('var result = ' + expression + '; result');
 };
 
 Consumer.prototype.validateExpression = function validateExpression (expression) {

@@ -119,4 +119,42 @@ describe('Consumer', function () {
       stub.restore();
     });
   });
+
+  describe('#evaluateExpression', function () {
+    it('correctly evaluates addition expressions with two operators', function () {
+      var result = Consumer.prototype.evaluateExpression('2+3=');
+
+      expect(result).to.equal(5);
+    });
+
+    it('correctly evaluates addition expressions with multiple operators', function () {
+      var result = Consumer.prototype.evaluateExpression('2+7+1056+34=');
+
+      expect(result).to.equal(1099);
+    });
+
+    it('correctly evaluates subtraction expressions with two operators', function () {
+      var result = Consumer.prototype.evaluateExpression('3-2=');
+
+      expect(result).to.equal(1);
+    });
+
+    it('correctly evaluates subtraction expressions with multiple operators', function () {
+      var result = Consumer.prototype.evaluateExpression('102-2-7-25=');
+
+      expect(result).to.equal(68);
+    });
+
+    it('correctly evaluates multiplication expressions with two operators', function () {
+      var result = Consumer.prototype.evaluateExpression('2*3=');
+
+      expect(result).to.equal(6);
+    });
+
+    it('correctly evaluates multiplication expressions with multiple operators', function () {
+      var result = Consumer.prototype.evaluateExpression('2*25*10*10=');
+
+      expect(result).to.equal(5000);
+    });
+  });
 });
