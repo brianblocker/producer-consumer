@@ -9,7 +9,33 @@ function Consumer (options) {
 Consumer.prototype.setOptions = function setOptions (options) {
   options = options || Object.create(null);
 
+  options.logger = options.logger || console.log;
+
   this.options = options;
+};
+
+Consumer.prototype.handleRequest = function handleRequest (expression) {
+  var result = this.getFromCache(expression);
+
+  this.addToLog('Received ' + expression + ' from client');
+
+  if (result === undefined) {
+    result = this.getResult(expression);
+
+    this.insertIntoCache(result);
+  }
+
+  this.addToLog(['Returning result of', expression, 'as', result, 'to client'].join(' '));
+
+  return result;
+};
+
+Consumer.prototype.getResult = function getResult (expression) {
+  if (! this.validateExpression(expression)) {
+    return '"invalid expression"';
+  }
+
+  return this.evaluateExpression(expression);
 };
 
 Consumer.prototype.insertIntoCache = function insertIntoCache (expression, result) {
@@ -34,36 +60,50 @@ Consumer.prototype.validateExpression = function validateExpression (expression)
   return /^\d+((\+|\-|\*)\d+)+=$/.test(String(expression));
 };
 
-Consumer.prototype.logResults = function logResults (message) {
+Consumer.prototype.addToLog = function addToLog (message) {
   var timestamp = (new Date()).toISOString();
 
-  Consumer.logs.push([timestamp, message].join(': '));
+  message = timestamp + ': ' + message;
+
+  this.options.logger(message);
+};
+
+Consumer.prototype.turnOffTimer = function turnOffTimer () {
+  if (this.logWriterTimeout) {
+    clearTimeout(this.logWriterTimeout);
+  }
+
+  this.logWriterTimeout = false;
 };
 
 Consumer.prototype.writeLogsToFile = function writeLogsToFile () {
   var new_message = '';
+  var timeout     = 10000;
+  var writeLogs   = this.writeLogsToFile.bind(this);
   var tmp;
+
+  if (! this.options.writeLogs) {
+    return;
+  }
+
+  if (Consumer.logs.length < 1) {
+    this.logWriterTimeout = setTimeout(writeLogs, timeout)
+  }
 
   new_message = Consumer.logs.join('\n');
 
   Consumer.logs = [];
-
-  if (! this.options.writeLogs) {
-    console.log(new_message);
-
-    return;
-  }
 
   fs.appendFile(__dirname + '/log.txt', new_message, function (err) {
     if (err) {
       console.log(err);
     }
 
-    setTimeout(this.writeLogsToFile, 10000);
+    this.logWriterTimeout = setTimeout(writeLogs, timeout);
   }.bind(this));
 };
 
-Consumer.cache = {};
+Consumer.cache = Object.create(null);
 Consumer.logs  = [];
 
 module.exports = Consumer;
