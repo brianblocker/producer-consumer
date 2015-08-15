@@ -18,7 +18,8 @@
   "homepage": "https://github.com/brianblocker/producer-consumer",
   "dependencies": {
     "connect": "^3.4.0",
-    "gulp": "^3.9.0"
+    "gulp": "^3.9.0",
+    "winston": "^1.0.1"
   },
   "devDependencies": {
     "chai": "^3.2.0",

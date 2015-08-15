@@ -1,6 +1,9 @@
 'use strict';
 
-var fs = require('fs');
+var fs      = require('fs');
+var winston = require('winston');
+
+winston.add(winston.transports.DailyRotateFile, {filename: __dirname + '/consumer.log'});
 
 function Consumer (options) {
   this.setOptions(options);
@@ -8,8 +11,6 @@ function Consumer (options) {
 
 Consumer.prototype.setOptions = function setOptions (options) {
   options = options || Object.create(null);
-
-  options.logger = options.logger || console.log;
 
   this.options = options;
 };
@@ -61,49 +62,9 @@ Consumer.prototype.validateExpression = function validateExpression (expression)
 };
 
 Consumer.prototype.addToLog = function addToLog (message) {
-  var timestamp = (new Date()).toISOString();
-
-  message = timestamp + ': ' + message;
-
-  this.options.logger(message);
-};
-
-Consumer.prototype.turnOffTimer = function turnOffTimer () {
-  if (this.logWriterTimeout) {
-    clearTimeout(this.logWriterTimeout);
-  }
-
-  this.logWriterTimeout = false;
-};
-
-Consumer.prototype.writeLogsToFile = function writeLogsToFile () {
-  var new_message = '';
-  var timeout     = 10000;
-  var writeLogs   = this.writeLogsToFile.bind(this);
-  var tmp;
-
-  if (! this.options.writeLogs) {
-    return;
-  }
-
-  if (Consumer.logs.length < 1) {
-    this.logWriterTimeout = setTimeout(writeLogs, timeout)
-  }
-
-  new_message = Consumer.logs.join('\n');
-
-  Consumer.logs = [];
-
-  fs.appendFile(__dirname + '/log.txt', new_message, function (err) {
-    if (err) {
-      console.log(err);
-    }
-
-    this.logWriterTimeout = setTimeout(writeLogs, timeout);
-  }.bind(this));
+  winston.info(message);
 };
 
 Consumer.cache = Object.create(null);
-Consumer.logs  = [];
 
 module.exports = Consumer;

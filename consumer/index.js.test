@@ -1,6 +1,7 @@
 var expect   = require('chai').expect;
 var sinon    = require('sinon');
 var fs       = require('fs');
+var winston  = require('winston');
 var Consumer = require('./index');
 
 describe('Consumer', function () {
@@ -87,42 +88,14 @@ describe('Consumer', function () {
   });
 
   describe('#addToLog', function () {
-    afterEach(function () {
-      Consumer.logs = [];
-    });
-
     it('adds the result to logger', function () {
-      var spy = sinon.spy();
+      var spy = sinon.spy(winston, 'info');
 
-      Consumer.prototype.addToLog.call({options:{logger: spy}}, '"2+1=" resulted in 3');
+      Consumer.prototype.addToLog('"2+1=" resulted in 3');
 
       expect(spy.called).to.equal(true);
-    });
-  });
 
-  xdescribe('#writeLogsToFile', function () {
-    it('does NOT call fs.appendFile if writeLogs is falsey', function () {
-      var stub     = sinon.stub(fs, 'appendFile');
-      var consumer = new Consumer();
-
-      consumer.writeLogsToFile();
-
-      expect(stub.called).to.be.false;
-
-      stub.restore();
-    });
-
-    it('DOES call fs.appendFile if writeLogs is true', function () {
-      var stub     = sinon.stub(fs, 'appendFile');
-      var consumer = new Consumer({writeLogs: true});
-
-      consumer.writeLogsToFile();
-
-      expect(stub.called).to.be.true;
-
-      consumer.turnOffTimer();
-
-      stub.restore();
+      spy.restore();
     });
   });
 
@@ -311,9 +284,5 @@ describe('Consumer', function () {
 
       expect(result).to.equal(this.expression_result);
     });
-  });
-
-  describe('#turnOffTimer', function () {
-    it('turns off the log writing timer');
   });
 });
