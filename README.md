@@ -6,6 +6,7 @@ In this system the Producer will send a series of random arithmetic expressions,
 
 ### Getting things setup
 Be sure you have NodeJS installed on your system. If you do not, follow these steps, and be patient because the rest of this guide will assume you know how Node works:
+
 1. Go to nodejs.org/download
 2. Download NodeJS 
 3. Install NodeJS
