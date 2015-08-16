@@ -11,25 +11,25 @@ describe('Consumer', function () {
   });
 
   describe('#insertIntoCache', function () {
-    it('inserts result into cache, keyed by the expression', function () {
-      var expression = "2+3=";
+    it('inserts result into cache, keyed by the equation', function () {
+      var equation = "2+3=";
       var result     = 5;
 
-      Consumer.prototype.insertIntoCache(expression, result);
+      Consumer.prototype.insertIntoCache(equation, result);
 
-      expect(Consumer.cache[expression]).to.equal(result);
+      expect(Consumer.cache[equation]).to.equal(result);
     });
   });
 
   describe('#getFromCache', function () {
     it('returns the result when present', function () {
-      var expression = "2+2=";
-      var result     = 4;
+      var equation = "2+2=";
+      var result   = 4;
       var cached;
 
-      Consumer.prototype.insertIntoCache(expression, result);
+      Consumer.prototype.insertIntoCache(equation, result);
 
-      cached = Consumer.prototype.getFromCache(expression);
+      cached = Consumer.prototype.getFromCache(equation);
 
       expect(cached).to.equal(result);
     });
@@ -41,97 +41,85 @@ describe('Consumer', function () {
     });
   });
 
-  describe('#validateExpression', function () {
-    it('validates 2 operand expressions', function () {
-      var expressions = [
+  describe('#validateEquation', function () {
+    it('validates 2 operand equations', function () {
+      var equations = [
         '2+2=', '2+7=', '0+8=', '15153+23=', '234235+254634=',
         '2*2=', '2*7=', '0*8=', '15153*23=', '234235*254634=',
         '2-2=', '2-7=', '0-8=', '15153-23=', '234235-254634=',
       ];
 
-      expressions.forEach(function (expression) {
-        expect(Consumer.prototype.validateExpression(expression)).to.be.true;
+      equations.forEach(function (equation) {
+        expect(Consumer.prototype.validateEquation(equation)).to.be.true;
       });
     });
 
-    it('validates 3 operand expressions', function () {
-      var expressions = [
+    it('validates 3 operand equations', function () {
+      var equations = [
         '2+2+5=', '2+7+5=', '0+8+5=', '15153+23+5=', '234235+254634+5=',
         '2*2*5=', '2*7*5=', '0*8*5=', '15153*23*5=', '234235*254634*5=',
         '2-2-5=', '2-7-5=', '0-8-5=', '15153-23-5=', '234235-254634-5=',
       ];
 
-      expressions.forEach(function (expression) {
-        expect(Consumer.prototype.validateExpression(expression)).to.be.true;
+      equations.forEach(function (equation) {
+        expect(Consumer.prototype.validateEquation(equation)).to.be.true;
       });
     });
 
-    it('validates 5+ operand expressions', function () {
-      var expressions = [
+    it('validates 5+ operand equations', function () {
+      var equations = [
         '2+3+5+4+6=', '2+3+5+4+6+22+1616+7+2+1634257+23+7='
       ];
 
-      expressions.forEach(function (expression) {
-        expect(Consumer.prototype.validateExpression(expression)).to.be.true;
+      equations.forEach(function (equation) {
+        expect(Consumer.prototype.validateEquation(equation)).to.be.true;
       });
     });
 
-    it('rejects bad expressions', function () {
-      var bad_expressions = [
+    it('rejects bad equations', function () {
+      var bad_equations = [
         '-2+5=', 'alphapig', '', 7, '8++7=', undefined
       ];
 
-      bad_expressions.forEach(function (expression) {
-        expect(Consumer.prototype.validateExpression(expression)).to.be.false;
+      bad_equations.forEach(function (equation) {
+        expect(Consumer.prototype.validateEquation(equation)).to.be.false;
       });
     });
   });
 
-  describe('#addToLog', function () {
-    it('adds the result to logger', function () {
-      var spy = sinon.spy(winston, 'info');
-
-      Consumer.prototype.addToLog('"2+1=" resulted in 3');
-
-      expect(spy.called).to.equal(true);
-
-      spy.restore();
-    });
-  });
-
-  describe('#evaluateExpression', function () {
-    it('correctly evaluates addition expressions with two operators', function () {
-      var result = Consumer.prototype.evaluateExpression('2+3=');
+  describe('#evaluateEquation', function () {
+    it('correctly evaluates addition equations with two operators', function () {
+      var result = Consumer.prototype.evaluateEquation('2+3=');
 
       expect(result).to.equal(5);
     });
 
-    it('correctly evaluates addition expressions with multiple operators', function () {
-      var result = Consumer.prototype.evaluateExpression('2+7+1056+34=');
+    it('correctly evaluates addition equations with multiple operators', function () {
+      var result = Consumer.prototype.evaluateEquation('2+7+1056+34=');
 
       expect(result).to.equal(1099);
     });
 
-    it('correctly evaluates subtraction expressions with two operators', function () {
-      var result = Consumer.prototype.evaluateExpression('3-2=');
+    it('correctly evaluates subtraction equations with two operators', function () {
+      var result = Consumer.prototype.evaluateEquation('3-2=');
 
       expect(result).to.equal(1);
     });
 
-    it('correctly evaluates subtraction expressions with multiple operators', function () {
-      var result = Consumer.prototype.evaluateExpression('102-2-7-25=');
+    it('correctly evaluates subtraction equations with multiple operators', function () {
+      var result = Consumer.prototype.evaluateEquation('102-2-7-25=');
 
       expect(result).to.equal(68);
     });
 
-    it('correctly evaluates multiplication expressions with two operators', function () {
-      var result = Consumer.prototype.evaluateExpression('2*3=');
+    it('correctly evaluates multiplication equations with two operators', function () {
+      var result = Consumer.prototype.evaluateEquation('2*3=');
 
       expect(result).to.equal(6);
     });
 
-    it('correctly evaluates multiplication expressions with multiple operators', function () {
-      var result = Consumer.prototype.evaluateExpression('2*25*10*10=');
+    it('correctly evaluates multiplication equations with multiple operators', function () {
+      var result = Consumer.prototype.evaluateEquation('2*25*10*10=');
 
       expect(result).to.equal(5000);
     });
@@ -141,41 +129,41 @@ describe('Consumer', function () {
     beforeEach(function () {
       this.consumer = new Consumer();
 
-      this.good_expression   = '2+3=';
-      this.expression_result = 5;
-      this.bad_expression    = 'Balsamiq';
+      this.good_equation   = '2+3=';
+      this.equation_result = 5;
+      this.bad_equation    = 'Balsamiq';
     });
 
-    it('calls #validateExpression', function () {
-      var spy = sinon.spy(Consumer.prototype, 'validateExpression');
+    it('calls #validateEquation', function () {
+      var spy = sinon.spy(Consumer.prototype, 'validateEquation');
 
-      this.consumer.getResult(this.good_expression);
+      this.consumer.getResult(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_expression);
+      expect(spy.args[0][0]).to.equal(this.good_equation);
 
       spy.restore();
     });
 
-    it('calls #evaluateExpression', function () {
-      var spy = sinon.spy(Consumer.prototype, 'evaluateExpression');
+    it('calls #evaluateEquation', function () {
+      var spy = sinon.spy(Consumer.prototype, 'evaluateEquation');
 
-      this.consumer.getResult(this.good_expression);
+      this.consumer.getResult(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_expression);
+      expect(spy.args[0][0]).to.equal(this.good_equation);
 
       spy.restore();
     });
 
-    it('returns "invalid expression" if #validateExpression fails', function () {
-      var result = this.consumer.getResult(this.bad_expression);
+    it('returns "invalid equation" if #validateEquation fails', function () {
+      var result = this.consumer.getResult(this.bad_equation);
 
-      expect(result).to.equal('"invalid expression"');
+      expect(result).to.equal('invalid equation');
     });
 
-    it('returns the result of #evaluateExpression', function () {
-      var result = this.consumer.getResult(this.good_expression);
+    it('returns the result of #evaluateEquation', function () {
+      var result = this.consumer.getResult(this.good_equation);
 
-      expect(result).to.equal(this.expression_result);
+      expect(result).to.equal(this.equation_result);
     });
   });
 
@@ -183,59 +171,49 @@ describe('Consumer', function () {
     beforeEach(function () {
       this.consumer = new Consumer();
 
-      this.good_expression   = '2+3=';
-      this.expression_result = 5;
-      this.cached_expression = '5+6=';
-      this.cached_result     = 11;
-      this.bad_expression    = 'Balsamiq';
+      this.good_equation   = '2+3=';
+      this.equation_result = 5;
+      this.cached_equation = '5+6=';
+      this.cached_result   = 11;
+      this.bad_equation    = 'Balsamiq';
 
-      Consumer.cache[this.cached_expression] = this.cached_result;
+      Consumer.cache[this.cached_equation] = this.cached_result;
     });
 
-    it('calls #getFromCache, passing the expression', function () {
+    it('calls #getFromCache, passing the equation', function () {
       var spy = sinon.spy(Consumer.prototype, 'getFromCache');
 
-      this.consumer.handleRequest(this.good_expression);
+      this.consumer.handleRequest(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_expression);
-
-      spy.restore();
-    });
-
-    it('passes the correct message to #addToLog when expression is received', function () {
-      var spy = sinon.spy(Consumer.prototype, 'addToLog');
-
-      this.consumer.handleRequest(this.good_expression);
-
-      expect(spy.args[0][0]).to.equal('Received ' + this.good_expression + ' from client');
+      expect(spy.args[0][0]).to.equal(this.good_equation);
 
       spy.restore();
     });
 
-    it('calls #getResult, passing the expression, if result is not cached', function () {
+    it('calls #getResult, passing the equation, if result is not cached', function () {
       var spy = sinon.spy(Consumer.prototype, 'getResult');
 
-      this.consumer.handleRequest(this.good_expression);
+      this.consumer.handleRequest(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_expression);
+      expect(spy.args[0][0]).to.equal(this.good_equation);
 
       spy.restore();
     });
 
-    it('does NOT call #getResult if the expression is cached', function () {
+    it('does NOT call #getResult if the equation is cached', function () {
       var spy = sinon.spy(Consumer.prototype, 'getResult');
 
-      this.consumer.handleRequest(this.cached_expression);
+      this.consumer.handleRequest(this.cached_equation);
 
       expect(spy.called).to.equal(false);
 
       spy.restore();
     });
 
-    it('does NOT call #insertIntoCache if the expression is cached', function () {
+    it('does NOT call #insertIntoCache if the equation is cached', function () {
       var spy = sinon.spy(Consumer.prototype, 'insertIntoCache');
 
-      this.consumer.handleRequest(this.cached_expression);
+      this.consumer.handleRequest(this.cached_equation);
 
       expect(spy.called).to.equal(false);
 
@@ -245,44 +223,23 @@ describe('Consumer', function () {
     it('calls #insertIntoCache, passing result', function () {
       var spy = sinon.spy(Consumer.prototype, 'insertIntoCache');
 
-      this.consumer.handleRequest(this.good_expression);
+      this.consumer.handleRequest(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.expression_result);
-
-      spy.restore();
-    });
-
-    it('passes the correct message to #addToLog when it has a good result', function () {
-      var spy    = sinon.spy(Consumer.prototype, 'addToLog');
-      var result = this.expression_result;
-
-      this.consumer.handleRequest(this.good_expression);
-
-      expect(spy.args[1][0]).to.equal(['Returning result of', this.good_expression, 'as', result, 'to client'].join(' '));
-
-      spy.restore();
-    });
-
-    it('passes the correct message to #addToLog when it has a bad result', function () {
-      var spy = sinon.spy(Consumer.prototype, 'addToLog');
-
-      this.consumer.handleRequest(this.bad_expression);
-
-      expect(spy.args[1][0]).to.equal(['Returning result of', this.bad_expression, 'as "invalid expression" to client'].join(' '));
+      expect(spy.args[0][0]).to.equal(this.equation_result);
 
       spy.restore();
     });
 
     it('returns the result when result is already cached', function () {
-      var result = this.consumer.handleRequest(this.cached_expression);
+      var result = this.consumer.handleRequest(this.cached_equation);
 
       expect(result).to.equal(this.cached_result);
     });
 
     it('returns the result when result is NOT cached', function () {
-      var result = this.consumer.handleRequest(this.good_expression);
+      var result = this.consumer.handleRequest(this.good_equation);
 
-      expect(result).to.equal(this.expression_result);
+      expect(result).to.equal(this.equation_result);
     });
   });
 });

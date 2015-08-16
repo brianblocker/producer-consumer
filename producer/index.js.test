@@ -50,38 +50,6 @@ describe('Producer', function () {
       expect(mock.options.max).to.equal(50);
     });
 
-    it('sets this.options.loop to false by default', function () {
-      var mock = {};
-
-      Producer.prototype.setOptions.call(mock);
-
-      expect(mock.options.loop).to.equal(false);
-    });
-
-    it('can set this.options.loop to true', function () {
-      var mock = {};
-
-      Producer.prototype.setOptions.call(mock, {loop: true});
-
-      expect(mock.options.loop).to.equal(true);
-    });
-
-    it('sets this.options.timeout to 1000 by default', function () {
-      var mock = {};
-
-      Producer.prototype.setOptions.call(mock);
-
-      expect(mock.options.timeout).to.equal(1000);
-    });
-
-    it('can set this.options.timeout to another value', function () {
-      var mock = {};
-
-      Producer.prototype.setOptions.call(mock, {timeout: 2000});
-
-      expect(mock.options.timeout).to.equal(2000);
-    });
-
     it('sets this.options.total to 2 by default', function () {
       var mock = {};
 
@@ -115,18 +83,9 @@ describe('Producer', function () {
     });
   });
 
-  describe('#generateInteger', function () {
-    it('returns a number', function () {
-      var producer = new Producer();
-      var result   = producer.generateInteger();
-
-      expect(result).to.be.a('number');
-    });
-  });
-
   describe('#generateEquation', function () {
     it('calls #generateInteger', function () {
-      var spy      = sinon.spy(Producer.prototype, 'generateInteger');
+      var spy      = sinon.spy(Producer, 'generateInteger');
       var producer = new Producer();
       var equation = producer.generateEquation();
 
@@ -157,44 +116,11 @@ describe('Producer', function () {
     });
   });
 
-  describe('#stop', function () {
-    it('stops this.timer and sets it to false', function () {
-      var producer = new Producer();
+  describe('.generateInteger', function () {
+    it('returns a number', function () {
+      var result = Producer.generateInteger();
 
-      producer.timer = setTimeout(function () {}, 9999);
-
-      producer.stop();
-
-      expect(producer.timer).to.equal(false);
-    });
-  });
-
-  describe('#run', function () {
-    it('calls #generateEquation', function () {
-      var spy      = sinon.spy(Producer.prototype, 'generateEquation');
-      var producer = new Producer();
-
-      producer.run();
-
-      expect(spy.called).to.equal(true);
-    });
-
-    it('does not set a timer when loop is false', function () {
-      var producer = new Producer();
-
-      producer.run();
-
-      expect(producer.timer).to.equal(false);
-    });
-
-    it('sets a timer when loop is true', function () {
-      var producer = new Producer({loop: true});
-
-      producer.run();
-
-      expect(producer.timer).to.exist;
-
-      producer.stop();
+      expect(result).to.be.a('number');
     });
   });
 
@@ -205,11 +131,6 @@ describe('Producer', function () {
       expect(operator).to.equal('+');
     });
 
-    it('can have a different default set', function () {
-      var operator = Producer.ensureProperOperator('', '*');
-
-      expect(operator).to.equal('*');
-    });
 
     it('returns valid operators', function () {
       var operator_minus    = Producer.ensureProperOperator('-');
