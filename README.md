@@ -32,6 +32,7 @@ Next, let's connect some Producers/Clients. Open a new terminal tab or window fo
 ```
 gulp start:producer
 ```
+## Configuration
 
 ### Configuring the Consumer (Server)
 
@@ -43,7 +44,6 @@ module.exports = {
   port:    3210 // port for connections
 };
 ```
-## Configuration
 
 ### Configuring the Producer (Client)
 
