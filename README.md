@@ -1,2 +1,71 @@
-# producer-consumer
-Fancy producer/consumer demo
+# Simple producer/consumer demo
+
+## Running this demo
+
+### Getting things setup
+Be sure you have NodeJS installed on your system. If you do not, follow these steps, and be patient because the rest of this guide will assume you know how Node works:
+1. Go to nodejs.org/download
+2. Download NodeJS 
+3. Install NodeJS
+4. If you're on a Window$ machine, reboot... (sorry)
+
+Once NodeJS is installed, it would be great if you installed the Gulp NPM package globally. Do this by opening up terminal and running the command:
+```
+npm install -g gulp
+```
+You will know if you were successful by running the following command:
+```
+gulp --v
+// should spit out something similar to:
+// [16:56:02] CLI version 3.8.11
+// [16:56:02] Local version 3.8.11
+```
+Now, be sure to clone this repo and `cd` into it and run `npm install`;
+
+### Running things
+
+First, you will need to run the Consumer/Server. Do so by running the Gulp task to start it up:
+```
+gulp start:consumer
+```
+Next, let's connect some Producers/Clients. Open a new terminal tab or window for each Producer/Client you wish to run. In each terminal tab/window, start a Producer/Client with the following command:
+```
+gulp start:producer
+```
+
+### Configuring the Consumer (Server)
+
+By default, the Consumer will run at `localhost:3210`. You can change this by changing the `host` and `port` options located in `consumer/config.js` here:
+```javascript
+module.exports = {
+  ...
+  host:    'localhost', // host for connections
+  port:    3210 // port for connections
+};
+```
+## Configuration
+
+### Configuring the Producer (Client)
+
+If you did not change the host or port settings for the Consumer, you will not need to modify them for the Producer. If you DID change them... well, obviously...
+```javascript
+// producer/config.js
+
+module.exports = {
+  loop:    true, // should the client run in a loop
+  timeout: 1000, // time (ms) between loops
+  logfile: __dirname + '/producer.log', // log file
+  host:    'localhost', // host to connect to
+  port:    3210, // port to connect to,
+  producer_config: { // configuration for the producer
+    max:      1000, // largest random number generated
+    total:    2, // total operands (numbers) that should be present in the equation
+    operator: '+' // operator (valid values are currently +, -, and *
+  }
+};
+```
+## TODOS / Wish List
+1. Include a module like `yargs` to make it possible to configure each Producer instance from the CLI.
+2. Create a "naughty producer" that randomly throws out bad equations
+3. Terminate the connection after each request/response so we can see what that would look like. Although, I used a socket here instead of HTTP so that we could use the same connection
+4. Implement cluster
