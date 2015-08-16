@@ -18,8 +18,13 @@ function Producer (options) {
 Producer.prototype.setOptions = function setOptions (options) {
   options = options || Object.create(null);
 
-  options.max      = Number(options.max)   || 1000;
-  options.total    = Number(options.total) || 2;
+  // the maximum random number generated, default of 1000
+  options.max = Number(options.max) || 1000;
+
+  // the total number of operands to use, default of 2
+  options.total = Number(options.total) || 2;
+
+  // the operator to use, guaranteed to be valid, default of +
   options.operator = Producer.ensureProperOperator(options.operator);
 
   this.options = options;

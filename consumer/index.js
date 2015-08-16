@@ -1,27 +1,13 @@
 'use strict';
 
-var fs = require('fs');
-
 /**
  * The Consumer, takes care of handling equations by validating and
  * solving them.
  * @constructor
- * @param {Object} options - the configuration for the consumer
  */
 function Consumer (options) {
-  this.setOptions(options);
+
 }
-
-/**
- * Sets this.options for the consumer to make the configuration
- * available to the other methods
- * @param {Object} options - the configuration for the consumer
- */
-Consumer.prototype.setOptions = function setOptions (options) {
-  options = options || Object.create(null);
-
-  this.options = options;
-};
 
 /**
  * Starting point to handle an equation solving request. This method

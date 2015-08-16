@@ -131,7 +131,6 @@ describe('Producer', function () {
       expect(operator).to.equal('+');
     });
 
-
     it('returns valid operators', function () {
       var operator_minus    = Producer.ensureProperOperator('-');
       var operator_plus     = Producer.ensureProperOperator('+');

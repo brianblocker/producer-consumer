@@ -1,23 +1,50 @@
 var Consumer = require('./index');
 var consumer = new Consumer();
-var options  = require('./config');
 var net      = require('net');
-var winston  = require('winston');
+var options  = require('./config'); // default configuration
+var winston  = require('winston'); // logger
 var server;
 
+/**
+ * Setup for the log file. Tells the logger which file to write logs
+ * to, and to create a new file each day.
+ */
 winston.add(winston.transports.DailyRotateFile, {filename: options.logfile});
 
+/**
+ * Setup the server
+ */
 server = net.createServer();
 
 server.listen(options.port, options.host);
 
 console.log('server listening at', [options.host, options.port].join(':'));
 
-server.on('connection', function (socket) {
-  console.log('Client connected: ' + socket.remoteAddress + ':' + socket.remotePort);
+/**
+ * Handle when a client (socket) is connected to the server
+ */
+server.on('connection', function (client) {
+  console.log('Client connected: ' + client.remoteAddress + ':' + client.remotePort);
 
-  socket.on('data', function (data) {
-    var expression = String(data);
+  /**
+   * Set encoding for all transmissions to this client so we don't have
+   * to deal with buffers
+   */
+  client.setEncoding('utf8');
+
+  /**
+   * Log client errors
+   */
+  client.on('error', function (err) {
+    console.log('Socket Error:', err);
+  });
+
+  /**
+   * Handle when data is received from the client, handle the request
+   * with the consumer, and respond back to the client
+   */
+  client.on('data', function (data) {
+    var expression = data;
     var result;
 
     winston.info('Received ' + expression + ' from client');
@@ -26,12 +53,22 @@ server.on('connection', function (socket) {
 
     winston.info(['Returning result of', expression, 'as', result, 'to client'].join(' '));
 
-    socket.write(String(result));
+    client.write(expression + result);
   });
 
-  socket.on('close', function(data) {
+  /**
+   * Log when a client disconnects
+   */
+  client.on('close', function(data) {
     console.log('client disconnected');
   });
+});
+
+/**
+ * Log server errors
+ */
+server.on('error', function (err) {
+  console.log('Server Error:', err);
 });
 
 
