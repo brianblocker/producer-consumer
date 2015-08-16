@@ -77,3 +77,7 @@ module.exports = {
 
 ## Diagrams
 [View UML diagrams here](https://github.com/brianblocker/producer-consumer/tree/master/diagrams)
+
+## Things to note about the code
+1. I _personally_ prefer 2 spaces instead of tabs, but I'm more concerned with everyone on the team just using the same convention vs catering to an opinion. Not worth a debate IMHO.
+2. I _personally_ make all variables, objects, and object properties `snake_case`, all "JavaScript classes" `CamelCase`, and all functions/methods/instances `camelCase`. I really like React, and React is forcing me to re-evaluate this. I am, again, more concerned with everyone on the team using the same convention.
