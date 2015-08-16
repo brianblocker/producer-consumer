@@ -1,5 +1,7 @@
 # Simple producer/consumer demo
 
+In this system the Producer will send a series of random arithmetic expressions, while the Consumer will accept these expressions, compute the result and then report the solution to the Producer.
+
 ## Running this demo
 
 ### Getting things setup
@@ -66,6 +68,11 @@ module.exports = {
 ```
 ## TODOS / Wish List
 1. Include a module like `yargs` to make it possible to configure each Producer instance from the CLI.
-2. Create a "naughty producer" that randomly throws out bad equations
-3. Terminate the connection after each request/response so we can see what that would look like. Although, I used a socket here instead of HTTP so that we could use the same connection
-4. Implement cluster
+2. Create a "naughty producer" that randomly throws out bad equations.
+3. Terminate the connection after each request/response so we can see what that would look like. Although, I used a socket here instead of HTTP so that we could use the same connection instead of disconnecting, reconnecting every time.
+4. Implement cluster.
+5. Make this use some sort of I/O operation for caching or something so that I can show off using callbacks...
+6. Get more professional experience using UML so I don't create noob-like UML diagrams.
+
+## Diagrams
+[View UML diagrams here](https://github.com/brianblocker/producer-consumer/tree/master/diagrams)
