@@ -11,33 +11,40 @@ describe('Consumer', function () {
   });
 
   describe('#insertIntoCache', function () {
-    it('inserts result into cache, keyed by the equation', function () {
+    it('inserts result into cache, keyed by the equation', function (done) {
       var equation = "2+3=";
       var result     = 5;
 
-      Consumer.prototype.insertIntoCache(equation, result);
+      Consumer.prototype.insertIntoCache(equation, result, function () {
+        expect(Consumer.cache[equation]).to.equal(result);
 
-      expect(Consumer.cache[equation]).to.equal(result);
+        done();
+      });
     });
   });
 
   describe('#getFromCache', function () {
-    it('returns the result when present', function () {
+    it('returns the result when present', function (done) {
       var equation = "2+2=";
       var result   = 4;
-      var cached;
 
-      Consumer.prototype.insertIntoCache(equation, result);
+      Consumer.prototype.insertIntoCache(equation, result, function () {
+        Consumer.prototype.getFromCache(equation, function (err, cached) {
+          expect(cached).to.equal(result);
 
-      cached = Consumer.prototype.getFromCache(equation);
-
-      expect(cached).to.equal(result);
+          done();
+        });
+      });
     });
 
-    it('returns undefined when result is not present', function () {
-      var cached = Consumer.prototype.getFromCache('1+1=');
+    it('returns undefined when result is not present', function (done) {
+      Consumer.prototype.getFromCache('1+1=', function (err, result) {
+        expect(result).not.to.exist;
+        expect(err).to.exist;
 
-      expect(cached).not.to.exist;
+        done();
+      });
+
     });
   });
 
@@ -88,40 +95,54 @@ describe('Consumer', function () {
   });
 
   describe('#evaluateEquation', function () {
-    it('correctly evaluates addition equations with two operators', function () {
-      var result = Consumer.prototype.evaluateEquation('2+3=');
+    it('correctly evaluates addition equations with two operators', function (done) {
+      Consumer.prototype.evaluateEquation('2+3=', function (err, result) {
+        expect(result).to.equal(5);
 
-      expect(result).to.equal(5);
+        done();
+      });
     });
 
-    it('correctly evaluates addition equations with multiple operators', function () {
-      var result = Consumer.prototype.evaluateEquation('2+7+1056+34=');
+    it('correctly evaluates addition equations with multiple operators', function (done) {
+      Consumer.prototype.evaluateEquation('2+7+1056+34=', function (err, result) {
+        expect(result).to.equal(1099);
 
-      expect(result).to.equal(1099);
+        done();
+      });
     });
 
-    it('correctly evaluates subtraction equations with two operators', function () {
-      var result = Consumer.prototype.evaluateEquation('3-2=');
+    it('correctly evaluates subtraction equations with two operators', function (done) {
+      Consumer.prototype.evaluateEquation('3-2=', function (err, result) {
+        expect(result).to.equal(1);
 
-      expect(result).to.equal(1);
+        done();
+      });
     });
 
-    it('correctly evaluates subtraction equations with multiple operators', function () {
-      var result = Consumer.prototype.evaluateEquation('102-2-7-25=');
+    it('correctly evaluates subtraction equations with multiple operators', function (done) {
+      Consumer.prototype.evaluateEquation('102-2-7-25=', function (err, result) {
+        expect(result).to.equal(68);
 
-      expect(result).to.equal(68);
+        done();
+      });
     });
 
-    it('correctly evaluates multiplication equations with two operators', function () {
-      var result = Consumer.prototype.evaluateEquation('2*3=');
+    it('correctly evaluates multiplication equations with two operators', function (done) {
+      Consumer.prototype.evaluateEquation('2*3=', function (err, result) {
+        expect(result).to.equal(6);
 
-      expect(result).to.equal(6);
+        done();
+      });
+
     });
 
-    it('correctly evaluates multiplication equations with multiple operators', function () {
-      var result = Consumer.prototype.evaluateEquation('2*25*10*10=');
+    it('correctly evaluates multiplication equations with multiple operators', function (done) {
+      Consumer.prototype.evaluateEquation('2*25*10*10=', function (err, result) {
+        expect(result).to.equal(5000);
 
-      expect(result).to.equal(5000);
+        done();
+      });
+
     });
   });
 
@@ -134,36 +155,42 @@ describe('Consumer', function () {
       this.bad_equation    = 'Balsamiq';
     });
 
-    it('calls #validateEquation', function () {
+    it('calls #validateEquation', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'validateEquation');
 
-      this.consumer.getResult(this.good_equation);
+      this.consumer.getResult(this.good_equation, function () {
+        expect(spy.args[0][0]).to.equal(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_equation);
-
-      spy.restore();
+        spy.restore();
+        done();
+      }.bind(this));
     });
 
-    it('calls #evaluateEquation', function () {
+    it('calls #evaluateEquation', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'evaluateEquation');
 
-      this.consumer.getResult(this.good_equation);
+      this.consumer.getResult(this.good_equation, function () {
+        expect(spy.args[0][0]).to.equal(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_equation);
-
-      spy.restore();
+        spy.restore();
+        done();
+      }.bind(this));
     });
 
-    it('returns "invalid equation" if #validateEquation fails', function () {
-      var result = this.consumer.getResult(this.bad_equation);
+    it('returns "invalid equation" if #validateEquation fails', function (done) {
+      this.consumer.getResult(this.bad_equation, function (err, result) {
+        expect(err).to.equal('invalid equation');
 
-      expect(result).to.equal('invalid equation');
+        done();
+      });
     });
 
-    it('returns the result of #evaluateEquation', function () {
-      var result = this.consumer.getResult(this.good_equation);
+    it('returns the result of #evaluateEquation', function (done) {
+      this.consumer.getResult(this.good_equation, function (err, result) {
+        expect(result).to.equal(this.equation_result);
 
-      expect(result).to.equal(this.equation_result);
+        done();
+      }.bind(this));
     });
   });
 
@@ -228,7 +255,7 @@ describe('Consumer', function () {
       });
     });
 
-    it('calls #insertIntoCache, passing result', function (done) {
+    xit('calls #insertIntoCache, passing result', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'insertIntoCache');
 
       this.consumer.handleRequest(this.good_equation, function () {

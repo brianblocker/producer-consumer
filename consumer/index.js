@@ -1,5 +1,7 @@
 'use strict';
 
+var Q = require('q');
+
 /**
  * The Consumer, takes care of handling equations by validating and
  * solving them.
@@ -17,15 +19,22 @@ function Consumer (options) {
  * @param {Function} callback - the callback that passes the result
  */
 Consumer.prototype.handleRequest = function handleRequest (equation, callback) {
-  var result = this.getFromCache(equation);
+  var getFromCache    = Q.nbind(this.getFromCache,    this);
+  var getResult       = Q.nbind(this.getResult,       this);
+  var insertIntoCache = Q.nbind(this.insertIntoCache, this, equation);
 
-  if (result === undefined) {
-    result = this.getResult(equation);
-
-    this.insertIntoCache(result);
-  }
-
-  callback(null, result);
+  getFromCache(equation)
+    .then(function (result) {
+      callback(null, result);
+    })
+    .fail(function () {
+      getResult(equation)
+        .then(insertIntoCache)
+        .then(function (result) {
+          callback(null, result)
+        })
+        .fail(callback);
+    });
 };
 
 /**
@@ -33,14 +42,21 @@ Consumer.prototype.handleRequest = function handleRequest (equation, callback) {
  * that the equation was invalid. Similar in API to #handleRequest,
  * except this method runs validation and equation evaluation.
  * @param {String} equation - the equation to be solved
- * @returns {Number|String} - the result, or an invalid message
+ * @param {Function} callback - the callback with the result
  */
-Consumer.prototype.getResult = function getResult (equation) {
+Consumer.prototype.getResult = function getResult (equation, callback) {
+  var evaluateEquation;
+
   if (! this.validateEquation(equation)) {
-    return 'invalid equation';
+    callback('invalid equation');
   }
 
-  return this.evaluateEquation(equation);
+  evaluateEquation = Q.nbind(this.evaluateEquation, this);
+
+  evaluateEquation(equation)
+    .then(function (result) {
+      callback(null, result);
+    }, callback);
 };
 
 /**
@@ -50,18 +66,28 @@ Consumer.prototype.getResult = function getResult (equation) {
  * @param {String} equation - the equation that will be used as the
  *   cache key
  * @param {Number|String} result - the value to be stored in the cache
+ * @param {Function} callback - the callback with the result
  */
-Consumer.prototype.insertIntoCache = function insertIntoCache (equation, result) {
+Consumer.prototype.insertIntoCache = function insertIntoCache (equation, result, callback) {
   Consumer.cache[equation] = result;
+
+  callback(null, result);
 };
 
 /**
  * Gets the result from the cache for equation
  * @param {String} equation - the cache key
- * @returns {Number|String} result - the value from the cache
+ * @param {Function} callback - the callback with the result
  */
-Consumer.prototype.getFromCache = function getFromCache (equation) {
-  return Consumer.cache[equation];
+Consumer.prototype.getFromCache = function getFromCache (equation, callback) {
+  var result = Consumer.cache[equation];
+
+  if (result === undefined) {
+    callback('not found');
+  }
+  else {
+    callback(null, result);
+  }
 };
 
 /**
@@ -72,7 +98,7 @@ Consumer.prototype.getFromCache = function getFromCache (equation) {
  * @param {String} equation - the equation to be solved
  * @returns {Number} - the solved value of the equation
  */
-Consumer.prototype.evaluateEquation = function evaluateEquation (equation) {
+Consumer.prototype.evaluateEquation = function evaluateEquation (equation, callback) {
   equation = equation.replace(/=$/, '');
 
   /**
@@ -80,7 +106,7 @@ Consumer.prototype.evaluateEquation = function evaluateEquation (equation) {
    * eval statement so that we can get the result back. This may or may
    * not be an acceptable replacement for regexing the equation.
    */
-  return eval('var result = ' + equation + '; result');
+  callback(null, eval('var result = ' + equation + '; result'));
 };
 
 /**
