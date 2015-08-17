@@ -29,11 +29,11 @@ Consumer.prototype.handleRequest = function handleRequest (equation, callback) {
     })
     .fail(function () {
       getResult(equation)
-        .then(insertIntoCache)
+        .then(insertIntoCache, callback)
         .then(function (result) {
+          console.log('it was a success')
           callback(null, result)
-        })
-        .fail(callback);
+        });
     });
 };
 

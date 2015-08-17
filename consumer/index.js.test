@@ -255,11 +255,11 @@ describe('Consumer', function () {
       });
     });
 
-    xit('calls #insertIntoCache, passing result', function (done) {
+    it('calls #insertIntoCache, passing result', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'insertIntoCache');
 
       this.consumer.handleRequest(this.good_equation, function () {
-        expect(spy.args[0][0]).to.equal(this.equation_result);
+        expect(spy.args[0][1]).to.equal(this.equation_result);
 
         spy.restore();
 
