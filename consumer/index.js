@@ -14,9 +14,9 @@ function Consumer (options) {
  * is similar in API to #getResult, except this method reads and writes
  * from the cache.
  * @param {String} equation - the equation to be solved
- * @returns {Number|String} - the result, or an invalid message
+ * @param {Function} callback - the callback that passes the result
  */
-Consumer.prototype.handleRequest = function handleRequest (equation) {
+Consumer.prototype.handleRequest = function handleRequest (equation, callback) {
   var result = this.getFromCache(equation);
 
   if (result === undefined) {
@@ -25,7 +25,7 @@ Consumer.prototype.handleRequest = function handleRequest (equation) {
     this.insertIntoCache(result);
   }
 
-  return result;
+  callback(null, result);
 };
 
 /**

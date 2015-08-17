@@ -180,66 +180,81 @@ describe('Consumer', function () {
       Consumer.cache[this.cached_equation] = this.cached_result;
     });
 
-    it('calls #getFromCache, passing the equation', function () {
+    it('calls #getFromCache, passing the equation', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'getFromCache');
 
-      this.consumer.handleRequest(this.good_equation);
+      this.consumer.handleRequest(this.good_equation, function () {
+        expect(spy.args[0][0]).to.equal(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_equation);
+        spy.restore();
 
-      spy.restore();
+        done();
+      }.bind(this));
     });
 
-    it('calls #getResult, passing the equation, if result is not cached', function () {
+    it('calls #getResult, passing the equation, if result is not cached', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'getResult');
 
-      this.consumer.handleRequest(this.good_equation);
+      this.consumer.handleRequest(this.good_equation, function () {
+        expect(spy.args[0][0]).to.equal(this.good_equation);
 
-      expect(spy.args[0][0]).to.equal(this.good_equation);
+        spy.restore();
 
-      spy.restore();
+        done();
+      }.bind(this));
     });
 
-    it('does NOT call #getResult if the equation is cached', function () {
+    it('does NOT call #getResult if the equation is cached', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'getResult');
 
-      this.consumer.handleRequest(this.cached_equation);
+      this.consumer.handleRequest(this.cached_equation, function () {
+        expect(spy.called).to.equal(false);
 
-      expect(spy.called).to.equal(false);
+        spy.restore();
 
-      spy.restore();
+        done();
+      });
     });
 
-    it('does NOT call #insertIntoCache if the equation is cached', function () {
+    it('does NOT call #insertIntoCache if the equation is cached', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'insertIntoCache');
 
-      this.consumer.handleRequest(this.cached_equation);
+      this.consumer.handleRequest(this.cached_equation, function () {
+        expect(spy.called).to.equal(false);
 
-      expect(spy.called).to.equal(false);
+        spy.restore();
 
-      spy.restore();
+        done();
+      });
     });
 
-    it('calls #insertIntoCache, passing result', function () {
+    it('calls #insertIntoCache, passing result', function (done) {
       var spy = sinon.spy(Consumer.prototype, 'insertIntoCache');
 
-      this.consumer.handleRequest(this.good_equation);
+      this.consumer.handleRequest(this.good_equation, function () {
+        expect(spy.args[0][0]).to.equal(this.equation_result);
 
-      expect(spy.args[0][0]).to.equal(this.equation_result);
+        spy.restore();
 
-      spy.restore();
+        done();
+      }.bind(this));
     });
 
-    it('returns the result when result is already cached', function () {
-      var result = this.consumer.handleRequest(this.cached_equation);
+    it('returns the result when result is already cached', function (done) {
+      this.consumer.handleRequest(this.cached_equation, function (err, result) {
+        expect(result).to.equal(this.cached_result);
 
-      expect(result).to.equal(this.cached_result);
+        done();
+      }.bind(this));
+
     });
 
-    it('returns the result when result is NOT cached', function () {
-      var result = this.consumer.handleRequest(this.good_equation);
+    it('returns the result when result is NOT cached', function (done) {
+      this.consumer.handleRequest(this.good_equation, function (err, result) {
+        expect(result).to.equal(this.equation_result);
 
-      expect(result).to.equal(this.equation_result);
+        done();
+      }.bind(this));
     });
   });
 });

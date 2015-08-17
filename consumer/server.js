@@ -49,11 +49,11 @@ server.on('connection', function (client) {
 
     winston.info('Received ' + expression + ' from client');
 
-    result = consumer.handleRequest(expression);
+    consumer.handleRequest(expression, function (err, result) {
+      winston.info(['Returning result of', expression, 'as', result, 'to client'].join(' '));
 
-    winston.info(['Returning result of', expression, 'as', result, 'to client'].join(' '));
-
-    client.write(expression + result);
+      client.write(expression + result);
+    });
   });
 
   /**
