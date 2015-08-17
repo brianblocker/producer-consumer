@@ -31,7 +31,6 @@ Consumer.prototype.handleRequest = function handleRequest (equation, callback) {
       getResult(equation)
         .then(insertIntoCache, callback)
         .then(function (result) {
-          console.log('it was a success')
           callback(null, result)
         });
     });
