@@ -50,6 +50,10 @@ server.on('connection', function (client) {
     winston.info('Received ' + expression + ' from client');
 
     consumer.handleRequest(expression, function (err, result) {
+      if (err) {
+        result = err;
+      }
+
       winston.info(['Returning result of', expression, 'as', result, 'to client'].join(' '));
 
       client.write(expression + result);
